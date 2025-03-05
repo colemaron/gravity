@@ -7,10 +7,10 @@ const fontSize = 12;
 
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d", {
+	imageSmoothingEnabled: false,
 	alpha: false,
+	depth: false,
 });
-
-ctx.imageSmoothingEnabled = false;
 
 function resizeCanvas() {
 	const save = ctx.getImageData(0, 0, canvas.width, canvas.height);

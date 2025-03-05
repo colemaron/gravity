@@ -5,7 +5,7 @@ import { Particle } from "../inc/particle.js";
 const particles = 1000;
 
 for (let i = 0; i < particles; i++) {
-	const mass = Random.int(1, 25);
+	const mass = Random.int(1, 10);
 
 	// get random position
 
@@ -18,7 +18,7 @@ for (let i = 0; i < particles; i++) {
 	// get velocity from position
 
 	const direction = Math.atan2(position.y - window.innerHeight / 2, position.x - window.innerWidth / 2);
-	const velocity = Vector.fromAngle(direction + Math.PI / 2).mult(2);
+	const velocity = Vector.fromAngle(direction + Math.PI / 2).mult(1);
 
 	// create particle
 

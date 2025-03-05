@@ -2,33 +2,53 @@ import { Particle } from "../inc/particle.js";
 import { Vector } from "../inc/vector.js";
 import "./initialize.js";
 
+const threads = navigator.hardwareConcurrency;
+
+const workers = [];
+let completed = 0;
+
+function chunkArray(array, threads) {
+	const chunks = [];
+	const chunkSize = Math.ceil(array.length / threads);
+
+	for (let i = 0; i < array.length; i += chunkSize) {
+		chunks.push(array.slice(i, i + chunkSize));
+	}
+
+	return chunks;
+}
+
 function updateParticles() {
-	for (let i = 0; i < Particle.particles.length; i++) {
-		const p1 = Particle.particles[i];
+	const chunks = chunkArray(Particle.particles, threads);
 
-		p1.position.add(p1.velocity);
+	workers.forEach(worker => worker.terminate());
+	completed = 0;
 
-		for (let j = i + 1; j < Particle.particles.length; j++) {
-			const p2 = Particle.particles[j];
+	for (const chunk of chunks) {
+		const worker = new Worker("./worker.js");
 
-			const direction = Vector.sub(p1.position, p2.position);
-			const distanceSquared = direction.lengthSquared;
+		worker.postMessage({ particles: chunk });
 
-			if (distanceSquared > 100) {
-				const force = p1.mass * p2.mass / distanceSquared;
-				const directionNormal = direction.normalize();
+		worker.onmessage = () => {
+			completed++;
 
-				const forceDirection = Vector.mult(directionNormal, force / 100);
-
-				p1.velocity.sub(forceDirection);
-				p2.velocity.add(forceDirection);
+			if (completedWorkers === chunks.length) {
+				console.log("done");
 			}
 		}
+
+		worker.onerror = function(err) {
+			console.error("Worker error:", err);
+		};
+
+		workers.push(worker);
 	}
 
 	// update
 
-	window.requestAnimationFrame(updateParticles);
+	// window.requestAnimationFrame(updateParticles);
 }
 
-window.requestAnimationFrame(updateParticles);
+updateParticles();
+
+// window.requestAnimationFrame(updateParticles);
