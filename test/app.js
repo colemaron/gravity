@@ -50,7 +50,7 @@ const fragmentShaderSource =
 
 		float alpha = 1.0 - smoothstep(io_halfRadius - 1.0, io_halfRadius, distance);
 	
-		fragColor = vec4(vec3(1.0), alpha);
+		fragColor = vec4(vec3(1.0), alpha * 0.5);
 	}`;
 
 // Compile Shaders and Create Program
@@ -79,12 +79,12 @@ gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
 // xPos, yPos, xVel, yVel, radius
 
-const circleData = Array.from({ length: 10000 }, () => [
+const circleData = Array.from({ length: 100000 }, () => [
 	Math.random() * canvas.width,
 	Math.random() * canvas.height,
 	0,
 	0,
-	Math.random() * 3 + 2
+	Math.random() * 10 
 ]).flat();
 
 const circleBuffer = gl.createBuffer();
