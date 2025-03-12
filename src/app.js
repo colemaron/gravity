@@ -1,23 +1,36 @@
 import { System } from "../inc/system.js";
-import { Render } from "../inc/render.js";
 
 // init rendering
 
 const canvas = document.getElementById("webgl-canvas");
-const render = new Render(canvas);
 
 // init physics
 
-const system = new System(10);
+const system = new System(100, canvas);
+
+// window resize
+
+function resize() {
+	system.render.resize(canvas.width, canvas.height);
+}
+
+window.addEventListener("resize", resize);
+
+resize();
+
+// fill system data
+
+system.init();
 
 // main loop
 
 function update() {
-	system.draw(render);
+	system.physics();
+	system.draw();
 
-	requestAnimationFrame(update);
+	console.log("UPDATING...");
 
-	console.log("updated");
+	// requestAnimationFrame(update);
 }
 
 update();

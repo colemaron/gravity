@@ -8,9 +8,9 @@ in float io_halfRadius;
 out vec4 fragColor;
 
 void main() {
-	float distance = length(io_vertexPosition * io_radius);
+	float d = length(io_vertexPosition * io_radius);
 
-	float alpha = 1.0 - smoothstep(io_halfRadius - 1.0, io_halfRadius, distance);
+	float alpha = 1.0 - smoothstep(io_halfRadius - 1.0, io_halfRadius, d);
 
-	fragColor = vec4(vec3(1.0), alpha * 0.5);
+	fragColor = vec4(vec3(1.0), alpha);
 }

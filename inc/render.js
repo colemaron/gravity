@@ -11,7 +11,7 @@ class Render {
 
 	constructor(canvas) {
 		this.canvas = canvas;
-		
+
 		const gl = this.gl = canvas.getContext("webgl2");
 
 		// init gl
@@ -19,8 +19,12 @@ class Render {
 		gl.clearColor(0.0, 0.0, 0.0, 1.0);
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+	}
 
-		// init program
+	// initialize program
+
+	init() {
+		const { gl, canvas } = this;
 
 		const program = this.program = this.createProgram("vert.glsl", "frag.glsl");
 		gl.useProgram(program);
@@ -39,7 +43,7 @@ class Render {
 
 		const particleBuffer = this.particleBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, particleBuffer);
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([]), gl.STATIC_DRAW);
+		// gl.bufferData(gl.ARRAY_BUFFER, 0, gl.STATIC_DRAW);
 
 		const stride = System.components * Render.bytes;
 
@@ -57,16 +61,29 @@ class Render {
 		// gl.vertexAttribPointer(particleVelocityLocation, 2, gl.FLOAT, false, stride, particleVelocityIndex * Render.bytes);
 		// gl.vertexAttribDivisor(particleVelocityLocation, 1);
 
-		const particleRadiusIndex = 4; // radius
-		const particleRadiusAttributeLocation = gl.getAttribLocation(program, "radius");
-		gl.enableVertexAttribArray(particleRadiusAttributeLocation);
-		gl.vertexAttribPointer(particleRadiusAttributeLocation, 1, gl.FLOAT, false, stride, particleRadiusIndex * Render.bytes);
-		gl.vertexAttribDivisor(particleRadiusAttributeLocation, 1);
+		const particleMassIndex = 4; // mass
+		const particleMassAttributeLocation = gl.getAttribLocation(program, "mass");
+		gl.enableVertexAttribArray(particleMassAttributeLocation);
+		gl.vertexAttribPointer(particleMassAttributeLocation, 1, gl.FLOAT, false, stride, particleMassIndex * Render.bytes);
+		gl.vertexAttribDivisor(particleMassAttributeLocation, 1);
 
 		// init uniforms
 
-		const resolutionLocation = gl.getUniformLocation(program, "resolution");
+		const resolutionLocation = this.resolutionLocation = gl.getUniformLocation(program, "resolution");
 		gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+	}
+
+	// resize
+
+	resize() {
+		const { offsetWidth, offsetHeight } = this.canvas;
+		const { gl } = this;
+
+		this.canvas.width = offsetWidth;
+		this.canvas.height = offsetHeight;
+
+		gl.viewport(0, 0, offsetWidth, offsetHeight);
+		gl.uniform2f(this.resolutionLocation, offsetWidth, offsetHeight);
 	}
 
 	// gl helper methods
